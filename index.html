@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Viabilidade - Carregadores Veiculares</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="app-header">
+            <img src="turbo_logo.png" alt="Turbo Recarga Logo" id="appLogo">
+            <h1>Calculadora de Viabilidade</h1>
+        </header>
+
+        <!-- SEÇÃO 1: ESCOLHA DO CARREGADOR E CUSTO INICIAL -->
+        <section id="secao-escolha-carregador">
+            <h2>1. Custo Inicial do Equipamento</h2>
+            <label for="tipoCarregador">Escolha o Tipo de Carregador:</label>
+            <select id="tipoCarregador">
+                <option value="">-- Selecione --</option>
+                <option value="40">Carregador 40 kW</option>
+                <option value="60">Carregador 60 kW</option>
+                <option value="120">Carregador 120 kW</option>
+            </select>
+
+            <div id="comparativoInicial" class="comparison-box" style="display:none;">
+                <h3>Comparativo de Custo Inicial (Carregador + Instalação)</h3>
+                <div class="empresa-comparativo">
+                    <h4><img src="turbo_logo.png" alt="Turbo Logo" class="empresa-logo"> Turbo (Empresa 1)</h4>
+                    <p>Custo Carregador: R$ <span id="turboCustoCarregador">0,00</span></p>
+                    <p>Custo Instalação: R$ <span id="turboCustoInstalacao">0,00</span></p>
+                    <p><strong>Custo Total: R$ <span id="turboCustoTotal">0,00</span></strong></p>
+                </div>
+                <div class="empresa-comparativo">
+                    <h4>Mercado (Empresa 2)</h4>
+                    <p>Custo Carregador: R$ <span id="mercadoCustoCarregador">0,00</span></p>
+                    <p>Custo Instalação: R$ <span id="mercadoCustoInstalacao">0,00</span></p>
+                    <p><strong>Custo Total: R$ <span id="mercadoCustoTotal">0,00</span></strong></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 2: PARÂMETROS DE ENERGIA E FUNCIONAMENTO -->
+        <section id="secao-parametros" style="display:none;">
+            <h2>2. Parâmetros de Operação e Custos</h2>
+            <div>
+                <label for="investimentoInicialProjecao">Investimento Inicial para Projeção (R$):</label>
+                <input type="number" id="investimentoInicialProjecao" step="100" placeholder="Ex: 90000">
+                <small>Preenchido com o custo da Turbo. Edite se necessário.</small>
+            </div>
+            <hr>
+            <div>
+                <label>Tensão de Rede:</label>
+                <input type="radio" name="tensaoRede" id="baixaTensao" value="0.75" checked> <label for="baixaTensao" class="radio-label">Baixa Tensão</label>
+                <input type="radio" name="tensaoRede" id="mediaTensao" value="0.50"> <label for="mediaTensao" class="radio-label">Média Tensão</label>
+            </div>
+            <div>
+                <label for="custoKwh">Custo do kWh (R$):</label>
+                <input type="number" id="custoKwh" step="0.01" value="0.75">
+            </div>
+            <hr>
+            <div>
+                <label>Horas de Funcionamento por Dia:</label>
+                <input type="radio" name="horasFuncionamento" id="horas24" value="24" checked> <label for="horas24" class="radio-label">24h</label>
+                <input type="radio" name="horasFuncionamento" id="horasOutro" value="outro"> <label for="horasOutro" class="radio-label">Outro</label>
+                <input type="number" id="horasCustom" step="1" min="1" max="24" style="display:none; width: 70px;" placeholder="Horas">
+            </div>
+            <div>
+                <label>Dias de Funcionamento por Mês:</label>
+                <input type="radio" name="diasFuncionamento" id="dias30" value="30" checked> <label for="dias30" class="radio-label">30 dias</label>
+                <input type="radio" name="diasFuncionamento" id="diasOutro" value="outro"> <label for="diasOutro" class="radio-label">Outro</label>
+                <input type="number" id="diasCustom" step="1" min="1" max="31" style="display:none; width: 70px;" placeholder="Dias">
+            </div>
+             <div>
+                <label for="precoVendaKwh">Preço de Venda kWh (R$):</label>
+                <input type="number" id="precoVendaKwh" step="0.01" value="2.50">
+            </div>
+             <button id="calcularProjecao" type="button">Calcular Projeção de Viabilidade</button>
+        </section>
+
+        <!-- SEÇÃO 3: BANNER DE COMPARATIVO DE PROJEÇÃO -->
+        <section id="secao-projecao" class="projection-banner" style="display:none;">
+            <h2>3. Projeção de Viabilidade Mensal</h2>
+            <div class="fixed-params-display">
+                <p><strong>Parâmetros da Simulação:</strong></p>
+                <p>Investimento Considerado: R$ <span id="projInvestimento">0,00</span></p>
+                <p>Custo do kWh: R$ <span id="projCustoKwh">0.00</span> | Preço de Venda kWh: R$ <span id="projPrecoVendaKwh">2.50</span></p>
+                <p>Horas/Dia: <span id="projHorasDia">24</span> | Dias/Mês: <span id="projDiasMes">30</span> | Potência Carregador: <span id="projPotenciaCarregador">0</span> kW</p>
+                <p>Média de kWh por Recarga (fixo): <span id="projMediaKwhRecarga">25</span> kWh</p>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Taxa Ocup.</th>
+                            <th>kWh Cons./Mês</th>
+                            <th>Recargas/Mês</th>
+                            <th>Recargas/Dia</th>
+                            <th>Receita Bruta</th>
+                            <th>PIS/COFINS (8,65%)</th>
+                            <th>Receita Líquida</th>
+                            <th>Custos App (8%)</th>
+                            <th>Custo Energia</th>
+                            <th>Margem</th>
+                            <th>OPEX</th>
+                            <th>Res. Bruto Proj.</th>
+                            <th>Impostos (IRPJ/CSLL)</th>
+                            <th>Res. Líquido Proj.</th>
+                            <th class="highlight-col">ROI Mês (%)</th>
+                            <th class="highlight-col">Payback (Meses)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaProjecao">
+                        <!-- Linhas serão geradas pelo JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
